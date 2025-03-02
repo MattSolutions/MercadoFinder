@@ -21,7 +21,7 @@ final class GetProductDetailUseCase: GetProductDetailUseCaseProtocol {
     func execute(id: String) async throws -> Product {
         guard !id.isEmpty else {
             Logger.error("Empty product ID")
-            throw ProductError.invalidProductId
+            throw NetworkError.invalidURL
         }
         
         Logger.info("Fetching details for product: \(id)")

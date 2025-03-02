@@ -22,19 +22,21 @@ final class SearchViewModel: ObservableObject {
     
     @MainActor
     func search() async {
-        guard !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
+        error = nil
+        
+        guard !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            searchResults = []
+            return
+        }
         
         isLoading = true
         defer { isLoading = false }
         
-        error = nil
         searchResults = []
         
         do {
             let result = try await searchUseCase.execute(query: searchQuery)
-            guard !result.results.isEmpty else {
-                throw ProductError.noResults  
-            }
             searchResults = result.results
         } catch {
             self.error = error

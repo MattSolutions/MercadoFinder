@@ -2,35 +2,58 @@
 //  ProductDetailViewModel.swift
 //  MercadoFinder
 //
-//  Created by MATIAS BATTITI on 28/02/2025.
+//  Created by MATIAS BATTITI on 02/03/2025.
 //
 
 import Foundation
 import SwiftUI
 
+enum ProductDetailState {
+    case loading
+    case loaded(Product)
+    case error(Error, (() -> Void)?)
+}
+
 final class ProductDetailViewModel: ObservableObject {
-    @Published var product: Product?
-    @Published var isLoading = false
-    @Published var error: Error?
+    @Published var state: ProductDetailState = .loading
+    @Published var showErrorAlert = false
     
-    private let productDetailUseCase: GetProductDetailUseCaseProtocol
+    var error: Error? = nil
+    private let productId: String
+    private let getProductDetailUseCase: GetProductDetailUseCaseProtocol
     
-    init(productDetailUseCase: GetProductDetailUseCaseProtocol = GetProductDetailUseCase()) {
-        self.productDetailUseCase = productDetailUseCase
+    init(productId: String, getProductDetailUseCase: GetProductDetailUseCaseProtocol = GetProductDetailUseCase()) {
+        self.productId = productId
+        self.getProductDetailUseCase = getProductDetailUseCase
+        
+        Task { await fetchProductDetails() }
     }
     
     @MainActor
-    func loadProductDetail(id: String) async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        error = nil
+    func fetchProductDetails() async {
+        state = .loading
         
         do {
-            product = try await productDetailUseCase.execute(id: id)
+            let product = try await getProductDetailUseCase.execute(id: productId)
+            state = .loaded(product)
         } catch {
-            self.error = error
-            Logger.error("Product detail error: \(error)")
+            if let networkError = error as? NetworkError {
+                self.error = networkError
+            } else {
+                self.error = NetworkError.unknown
+            }
+            
+            state = .error(error) { [weak self] in
+                Task { [weak self] in
+                    await self?.fetchProductDetails()
+                }
+            }
+            showErrorAlert = true
         }
+    }
+    
+    func getProductURL(_ productId: String?) -> URL? {
+        guard let id = productId else { return nil }
+        return URL(string: "https://www.mercadolibre.com/item/\(id)")
     }
 }

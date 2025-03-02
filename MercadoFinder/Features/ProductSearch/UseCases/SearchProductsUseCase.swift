@@ -21,7 +21,7 @@ final class SearchProductsUseCase: SearchProductsUseCaseProtocol {
     func execute(query: String) async throws -> SearchResult {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             Logger.error("Empty search query")
-            throw ProductError.emptySearchQuery
+            throw NetworkError.invalidURL
         }
         
         Logger.info("Searching for products with query: \(query)")
