@@ -101,7 +101,7 @@ struct ProductAttributesView: View {
             
             if let warranty = warranty {
                 HStack(spacing: 4) {
-                    Image(IconNames.shield)
+                    Image(systemName: IconNames.shield)
                         .foregroundColor(.green)
                     Text(warranty)
                         .font(.subheadline)
