@@ -11,49 +11,60 @@ import SwiftUI
 enum ProductDetailState {
     case loading
     case loaded(Product)
-    case error(Error, (() -> Void)?)
+    case error(Error, retryAction: (() -> Void)?)
 }
 
+@MainActor
 final class ProductDetailViewModel: ObservableObject {
-    @Published var state: ProductDetailState = .loading
-    @Published var showErrorAlert = false
+    // MARK: - State Properties
+    @Published private(set) var state: ProductDetailState = .loading
     
-    var error: Error? = nil
+    // MARK: - Private Properties
     private let productId: String
     private let getProductDetailUseCase: GetProductDetailUseCaseProtocol
     
-    init(productId: String, getProductDetailUseCase: GetProductDetailUseCaseProtocol = GetProductDetailUseCase()) {
+    // MARK: - Computed Properties
+    var product: Product? {
+        guard case .loaded(let product) = state else { return nil }
+        return product
+    }
+    
+    // MARK: - Initialization
+    init(
+        productId: String,
+        getProductDetailUseCase: GetProductDetailUseCaseProtocol = GetProductDetailUseCase()
+    ) {
         self.productId = productId
         self.getProductDetailUseCase = getProductDetailUseCase
         
-        Task { await fetchProductDetails() }
+        fetchProductDetails()
     }
     
-    @MainActor
-    func fetchProductDetails() async {
+    // MARK: - Data Fetching
+    func fetchProductDetails() {
         state = .loading
         
-        do {
-            let product = try await getProductDetailUseCase.execute(id: productId)
-            state = .loaded(product)
-        } catch {
-            if let networkError = error as? NetworkError {
-                self.error = networkError
-            } else {
-                self.error = NetworkError.unknown
-            }
-            
-            state = .error(error) { [weak self] in
-                Task { [weak self] in
-                    await self?.fetchProductDetails()
+        Task {
+            do {
+                let product = try await getProductDetailUseCase.execute(id: productId)
+                state = .loaded(product)
+            } catch {
+                let networkError = error as? NetworkError ?? .unknown
+                state = .error(networkError) { [weak self] in
+                    self?.fetchProductDetails()
                 }
             }
-            showErrorAlert = true
         }
     }
     
-    func getProductURL(_ productId: String?) -> URL? {
-        guard let id = productId else { return nil }
-        return URL(string: "https://www.mercadolibre.com/item/\(id)")
+    // MARK: - Utility Methods
+    func getProductURL() -> URL? {
+        guard
+            case .loaded(let product) = state,
+            let permalink = product.permalink,
+            let url = URL(string: permalink)
+        else { return nil }
+        
+        return url
     }
 }

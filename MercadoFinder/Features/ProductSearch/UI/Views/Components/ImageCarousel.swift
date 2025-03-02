@@ -28,33 +28,52 @@ struct ImageCarousel: View {
             } else {
                 TabView(selection: $currentIndex) {
                     ForEach(Array(pictures.enumerated()), id: \.element.id) { index, picture in
-                        AsyncImage(
-                            url: URL(string: picture.url ?? ""),
-                            content: { image in
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                            },
-                            placeholder: {
-                                ProgressView()
-                            }
-                        )
-                        .tag(index)
+                        PictureView(urlString: picture.url)
+                            .tag(index)
                     }
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 
                 if pictures.count > 1 {
                     HStack(spacing: 8) {
-                        ForEach(0..<pictures.count, id: \.self) { index in
+                        let visibleDots = min(pictures.count, 4)
+                        let startIndex = min(max(0, currentIndex - visibleDots/2), pictures.count - visibleDots)
+                        
+                        ForEach(startIndex..<startIndex+visibleDots, id: \.self) { index in
                             Circle()
-                                .fill(currentIndex == index ? Color.primary : Color.gray.opacity(0.5))
+                                .fill(currentIndex == index ? Color.primaryColor : Color.gray.opacity(0.5))
                                 .frame(width: 8, height: 8)
                         }
                     }
                     .padding(.top, 8)
+                    .animation(.easeInOut, value: currentIndex)
                 }
             }
         }
+    }
+}
+
+struct PictureView: View {
+    let urlString: String?
+    
+    private var secureUrl: URL? {
+        guard let originalString = urlString else { return nil }
+        let secureString = originalString.replacingOccurrences(of: "http://", with: "https://")
+        return URL(string: secureString)
+    }
+    
+    var body: some View {
+        AsyncImage(
+            url: secureUrl,
+            content: { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+            },
+            placeholder: {
+                Image(systemName: IconNames.emptyImage)
+                    .modifier(PlaceholderImageModifier())
+            }
+        )
     }
 }

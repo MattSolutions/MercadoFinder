@@ -8,11 +8,18 @@
 import Foundation
 import SwiftUI
 
+enum SearchState {
+    case empty
+    case loading
+    case success([Product])  
+    case failure(Error, retry: (() -> Void)?)
+}
+
+
+@MainActor
 final class SearchViewModel: ObservableObject {
     @Published var searchQuery = ""
-    @Published var searchResults: [Product] = []
-    @Published var isLoading = false
-    @Published var error: Error?
+    @Published var state: SearchState = .empty
     
     private let searchUseCase: SearchProductsUseCaseProtocol
     
@@ -20,28 +27,25 @@ final class SearchViewModel: ObservableObject {
         self.searchUseCase = searchUseCase
     }
     
-    @MainActor
     func search() async {
-
-        error = nil
-        
         guard !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            searchResults = []
+            state = .empty
             return
         }
         
-        isLoading = true
-        defer { isLoading = false }
-        
-        searchResults = []
+        state = .loading
         
         do {
             let result = try await searchUseCase.execute(query: searchQuery)
-            searchResults = result.results
+            state = .success(result.results)
         } catch {
-            self.error = error
+            let networkError = error as? NetworkError ?? NetworkError.unknown
+            state = .failure(networkError) { [weak self] in
+                Task { await self?.search() }
+            }
             Logger.error("Search error: \(error)")
         }
     }
 }
+
 

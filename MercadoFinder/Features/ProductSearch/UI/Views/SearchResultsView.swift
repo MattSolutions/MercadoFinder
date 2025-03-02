@@ -8,15 +8,8 @@
 
 import SwiftUI
 
-enum ProductListState {
-    case loading
-    case loaded([Product])
-    case error(Error, (() -> Void)?)
-    case empty
-}
-
 struct SearchResultsView: View {
-    let state: ProductListState
+    let state: SearchState
     
     var body: some View {
         ScrollView {
@@ -31,16 +24,16 @@ struct SearchResultsView: View {
     @ViewBuilder
     private var contentView: some View {
         switch state {
-        case .loading:
-            LoadingStateView()
-        case .loaded(let products):
-            ProductList(products: products)
-        case .error(let error, let onRetry):
-            ErrorStateView(error: error, onRetry: onRetry)
         case .empty:
             EmptyStateView(iconName: IconNames.search,
                            title: AppText.Search.welcome,
                            message: AppText.Search.slogan)
+        case .loading:
+            LoadingStateView()
+        case .success(let products):
+            ProductList(products: products)
+        case .failure(let error, let retry):
+            ErrorStateView(error: error, onRetry: retry)
         }
     }
 }
@@ -52,7 +45,10 @@ private struct ProductList: View {
     
     var body: some View {
         ForEach(products) { product in
-            ProductRowItem(product: product)
+            NavigationLink(destination: ProductDetailView(productId: product.id ?? "")) {
+                ProductRowItem(product: product)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }
@@ -71,7 +67,7 @@ private struct LoadingStateView: View {
 #Preview("Products List") {
     NavigationStack {
         SearchResultsView(
-            state: .loaded([
+            state: .success([
                 Product(
                     id: "MLA1",
                     title: "iPad Pro 12.9-inch",
@@ -116,9 +112,9 @@ private struct LoadingStateView: View {
 #Preview("Error State") {
     NavigationStack {
         SearchResultsView(
-            state: .error(
+            state: .failure(
                 NetworkError.serverError(statusCode: 404),
-                {}
+                retry: {}
             )
         )
     }

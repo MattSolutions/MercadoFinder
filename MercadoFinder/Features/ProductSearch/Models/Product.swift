@@ -20,6 +20,8 @@ struct Product: Codable, Identifiable {
     var description: String?
     var initialQuantity: Int?
     var warranty: String?
+    var permalink: String?
+    
     
     enum CodingKeys: String, CodingKey {
         case id, title, price, thumbnail, pictures, condition, shipping
@@ -28,6 +30,7 @@ struct Product: Codable, Identifiable {
         case description
         case initialQuantity = "initial_quantity"
         case warranty
+        case permalink 
     }
     
     func conditionString() -> String {

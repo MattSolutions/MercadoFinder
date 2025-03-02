@@ -15,7 +15,7 @@ struct SearchView: View {
             VStack(spacing: 0) {
                 searchHeader
                 
-                SearchResultsView(state: mapViewModelToState())
+                SearchResultsView(state: viewModel.state)
             }
             .navigationTitle("MercadoFinder")
             .navigationBarTitleDisplayMode(.inline)
@@ -34,19 +34,6 @@ struct SearchView: View {
             .padding(.vertical, 8)
         }
         .background(Color.yellow.opacity(0.8))
-    }
-    
-    // MARK: - State Mapping
-    private func mapViewModelToState() -> ProductListState {
-        if viewModel.isLoading {
-            return .loading
-        } else if let error = viewModel.error {
-            return .error(error, performSearch)
-        } else if !viewModel.searchResults.isEmpty {
-            return .loaded(viewModel.searchResults)
-        } else {
-            return .empty
-        }
     }
     
     // MARK: - Actions

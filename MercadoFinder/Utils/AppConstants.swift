@@ -1,5 +1,5 @@
 //
-//  Extensions.swift
+//  AppConstants.swift
 //  MercadoFinder
 //
 //  Created by MATIAS BATTITI on 28/02/2025.
@@ -47,6 +47,7 @@ enum IconNames {
     static let warning = "exclamationmark.triangle"
     static let retry = "arrow.clockwise"
     static let search = "magnifyingglass"
+    static let shield = "checkmark.shield"
 }
 
 // MARK: - String Extensions
