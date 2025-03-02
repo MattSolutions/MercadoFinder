@@ -33,7 +33,8 @@ struct Product: Codable, Identifiable {
         case permalink 
     }
     
-    func conditionString() -> String {
+    func conditionString() -> String? {
+        guard condition != nil else { return nil }
         return isNew() ? AppText.Product.new : AppText.Product.used
     }
     

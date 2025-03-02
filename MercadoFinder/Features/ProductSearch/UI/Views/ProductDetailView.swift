@@ -39,34 +39,68 @@ struct ProductDetailContentView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                ProductTitleView(title: product.title)
+                Text(product.title)
+                    .font(.title2)
+                    .fontWeight(.regular)
+                    .lineLimit(5)
                     .padding(.leading, 8)
                 
                 VStack(alignment: .leading, spacing: 16) {
-                    ProductAttributesView(
-                        conditionString: product.conditionString(),
-                        warranty: product.warranty,
-                        alignment: .leading,
-                        spacing: 8
-                    )
+                    VStack(alignment: .leading, spacing: 8) {
+                        if let condition = product.conditionString() {
+                            ProductLabel(
+                                backgroundColor: .gray.opacity(0.1),
+                                cornerRadius: 4,
+                                fontSize: 12,
+                                height: 24,
+                                text: condition,
+                                textColor: .gray
+                            )
+                        }
+                        
+                        if let warranty = product.warranty {
+                            HStack(spacing: 4) {
+                                Image(systemName: IconNames.shield)
+                                    .foregroundColor(.green)
+                                Text(warranty)
+                                    .font(.subheadline)
+                            }
+                        }
+                    }
                     
-                    ProductImageSection(
-                        pictures: product.pictures,
-                        thumbnail: product.thumbnail
-                    )
+                    // Image Section
+                    if let pictures = product.pictures, !pictures.isEmpty {
+                        ImageCarousel(pictures: pictures)
+                            .frame(height: 360)
+                    } else if let thumbnail = product.thumbnail {
+                        URLImageView(urlString: thumbnail)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 360)
+                    }
                     
-                    ProductPriceTag(price: product.price)
+                    // Price
+                    Text(product.price.toFormattedPrice())
+                        .font(.title)
+                        .fontWeight(.semibold)
                     
+                    // Free Shipping
                     if let freeShippingText = product.freeShippingText() {
-                        ProductFreeShippingTag(text: freeShippingText)
+                        ProductLabel(
+                            backgroundColor: .highlightBackground,
+                            cornerRadius: 8,
+                            fontSize: 14,
+                            height: 30,
+                            text: freeShippingText,
+                            textColor: .highlightColor
+                        )
                     }
                 }
                 .padding(.horizontal)
                 
                 Spacer(minLength: 10)
                 
-                if let productId = product.id {
-                    BuyButton(productId: productId, permalink: product.permalink)
+                if let permalink = product.permalink {
+                    BuyButton(permalink: permalink)
                 }
             }
             .padding(.vertical)
@@ -74,111 +108,14 @@ struct ProductDetailContentView: View {
     }
 }
 
-// MARK: - Product Information Subcomponents
-struct ProductTitleView: View {
-    let title: String
-    
-    var body: some View {
-        Text(title)
-            .font(.title2)
-            .fontWeight(.regular)
-            .lineLimit(5)
-    }
-}
-
-struct ProductAttributesView: View {
-    let conditionString: String?
-    let warranty: String?
-    var alignment: HorizontalAlignment
-    var spacing: CGFloat
-    
-    var body: some View {
-        VStack(alignment: alignment, spacing: spacing) {
-            
-            if let condition = conditionString {
-                ProductConditionTag(condition: condition)
-            }
-            
-            if let warranty = warranty {
-                HStack(spacing: 4) {
-                    Image(systemName: IconNames.shield)
-                        .foregroundColor(.green)
-                    Text(warranty)
-                        .font(.subheadline)
-                }
-            }
-        }
-    }
-}
-
-struct ProductConditionTag: View {
-    let condition: String
-    
-    var body: some View {
-        ProductLabel(
-            backgroundColor: .gray.opacity(0.1),
-            cornerRadius: 4,
-            fontSize: 12,
-            height: 24,
-            text: condition,
-            textColor: .gray
-        )
-    }
-}
-
-struct ProductImageSection: View {
-    let pictures: [Picture]?
-    let thumbnail: String?
-    
-    var body: some View {
-        if let pictures = pictures, !pictures.isEmpty {
-            ImageCarousel(pictures: pictures)
-                .frame(height: 360)
-        } else if let thumbnail = thumbnail {
-            URLImageView(urlString: thumbnail)
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 360)
-        }
-    }
-}
-
-struct ProductPriceTag: View {
-    let price: Double
-    
-    var body: some View {
-        Text(price.toFormattedPrice())
-            .font(.title)
-            .fontWeight(.semibold)
-    }
-}
-
-struct ProductFreeShippingTag: View {
-    let text: String
-    
-    var body: some View {
-        ProductLabel(
-            backgroundColor: .highlightBackground,
-            cornerRadius: 8,
-            fontSize: 14,
-            height: 30,
-            text: text,
-            textColor: .highlightColor
-        )
-    }
-}
-
+// MARK: - Buy Button
 struct BuyButton: View {
     @Environment(\.openURL) private var openURL
-    let productId: String
-    let permalink: String?
+    let permalink: String
     
     var body: some View {
         Button {
-            guard
-                let permalink = permalink,
-                let url = URL(string: permalink)
-            else { return }
-            
+            guard let url = URL(string: permalink) else { return }
             openURL(url)
         } label: {
             HStack {
