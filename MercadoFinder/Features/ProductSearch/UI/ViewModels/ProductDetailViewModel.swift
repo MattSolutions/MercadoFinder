@@ -16,18 +16,13 @@ enum ProductDetailState {
 
 @MainActor
 final class ProductDetailViewModel: ObservableObject {
-    // MARK: - State Properties
+    // MARK: - State
     @Published private(set) var state: ProductDetailState = .loading
     
     // MARK: - Private Properties
     private let productId: String
     private let getProductDetailUseCase: GetProductDetailUseCaseProtocol
-    
-    // MARK: - Computed Properties
-    var product: Product? {
-        guard case .loaded(let product) = state else { return nil }
-        return product
-    }
+    private var currentTask: Task<Void, Never>?
     
     // MARK: - Initialization
     init(
@@ -36,22 +31,30 @@ final class ProductDetailViewModel: ObservableObject {
     ) {
         self.productId = productId
         self.getProductDetailUseCase = getProductDetailUseCase
-        
         fetchProductDetails()
     }
     
-    // MARK: - Data Fetching
+    deinit {
+        currentTask?.cancel()
+    }
+    
+    // MARK: - Fetch Data
     func fetchProductDetails() {
+        currentTask?.cancel()
+        
         state = .loading
         
-        Task {
+        currentTask = Task {
             do {
                 let product = try await getProductDetailUseCase.execute(id: productId)
-                state = .loaded(product)
+                if !Task.isCancelled {
+                    state = .loaded(product)
+                }
             } catch {
-                let networkError = error as? NetworkError ?? .unknown
-                state = .error(networkError) { [weak self] in
-                    self?.fetchProductDetails()
+                if !Task.isCancelled {
+                    let networkError = error as? NetworkError ?? .unknown
+                    state = .error(networkError, retryAction: fetchProductDetails)
+                    Logger.error("Error fetching product details: \(networkError.localizedDescription)")
                 }
             }
         }
@@ -66,5 +69,10 @@ final class ProductDetailViewModel: ObservableObject {
         else { return nil }
         
         return url
+    }
+    
+    func cancelOngoingTasks() {
+        currentTask?.cancel()
+        currentTask = nil
     }
 }

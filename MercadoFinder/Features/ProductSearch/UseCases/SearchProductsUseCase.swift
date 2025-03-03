@@ -24,7 +24,6 @@ final class SearchProductsUseCase: SearchProductsUseCaseProtocol {
             throw NetworkError.invalidURL
         }
         
-        Logger.info("Searching for products with query: \(query)")
         return try await repository.searchProducts(query: query)
     }
 }

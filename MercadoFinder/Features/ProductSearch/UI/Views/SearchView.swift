@@ -39,9 +39,7 @@ struct SearchView: View {
     // MARK: - Actions
     private func performSearch() {
         hideKeyboard()
-        Task {
-            await viewModel.search()
-        }
+        viewModel.search()
     }
     
     private func hideKeyboard() {

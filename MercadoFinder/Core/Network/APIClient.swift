@@ -27,8 +27,6 @@ final class APIClient: APIClientProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         
-        Logger.info("Making request to: \(url.absoluteString)")
-        
         do {
             let (data, response) = try await session.data(for: request)
             

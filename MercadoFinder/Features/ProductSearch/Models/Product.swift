@@ -30,7 +30,7 @@ struct Product: Codable, Identifiable {
         case description
         case initialQuantity = "initial_quantity"
         case warranty
-        case permalink 
+        case permalink
     }
     
     func conditionString() -> String? {

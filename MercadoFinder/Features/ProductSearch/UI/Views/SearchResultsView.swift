@@ -20,7 +20,7 @@ struct SearchResultsView: View {
         }
         .background(Color(.systemGroupedBackground))
     }
-
+    
     @ViewBuilder
     private var contentView: some View {
         switch state {
@@ -32,8 +32,8 @@ struct SearchResultsView: View {
             LoadingStateView()
         case .success(let products):
             ProductList(products: products)
-        case .failure(let error, let retry):
-            ErrorStateView(error: error, onRetry: retry)
+        case .failure(let error, let retryAction):
+            ErrorStateView(error: error, onRetry: retryAction)
         }
     }
 }
@@ -45,10 +45,11 @@ private struct ProductList: View {
     
     var body: some View {
         ForEach(products) { product in
-            NavigationLink(destination: ProductDetailView(productId: product.id ?? "")) {
+            NavigationLink(destination:
+                            ProductDetailView(viewModel: ProductDetailViewModel(productId: product.id ?? ""))) {
                 ProductRowItem(product: product)
             }
-            .buttonStyle(PlainButtonStyle())
+                            .buttonStyle(PlainButtonStyle())
         }
     }
 }
@@ -114,7 +115,7 @@ private struct LoadingStateView: View {
         SearchResultsView(
             state: .failure(
                 NetworkError.serverError(statusCode: 404),
-                retry: {}
+                retryAction: {}
             )
         )
     }

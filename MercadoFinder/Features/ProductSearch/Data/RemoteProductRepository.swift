@@ -15,24 +15,12 @@ final class RemoteProductRepository: ProductRepositoryProtocol {
     }
     
     func searchProducts(query: String) async throws -> SearchResult {
-        Logger.info("Searching products with query: \(query)")
-        do {
-            let endpoint = ProductEndpoints.searchProducts(productName: query)
-            return try await apiClient.fetch(endpoint)
-        } catch {
-            Logger.error("Failed to search products: \(error)")
-            throw error
-        }
+        let endpoint = ProductEndpoints.searchProducts(productName: query)
+        return try await apiClient.fetch(endpoint)
     }
-    
+
     func getProductDetail(id: String) async throws -> Product {
-        Logger.info("Getting product detail for ID: \(id)")
-        do {
-            let endpoint = ProductEndpoints.productDetail(productId: id)
-            return try await apiClient.fetch(endpoint)
-        } catch {
-            Logger.error("Failed to get product detail: \(error)")
-            throw error
-        }
+        let endpoint = ProductEndpoints.productDetail(productId: id)
+        return try await apiClient.fetch(endpoint)
     }
 }

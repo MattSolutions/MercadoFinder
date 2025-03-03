@@ -10,13 +10,16 @@ import SwiftUI
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
     
-    init(productId: String) {
-        _viewModel = StateObject(wrappedValue: ProductDetailViewModel(productId: productId))
+    init(viewModel: ProductDetailViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {
         content
             .navigationBarTitleDisplayMode(.inline)
+            .onDisappear {
+                viewModel.cancelOngoingTasks()
+            }
     }
     
     @ViewBuilder
@@ -25,82 +28,34 @@ struct ProductDetailView: View {
         case .loading:
             ProductDetailSkeletonView()
         case .loaded(let product):
-            ProductDetailContentView(product: product)
-        case .error(let error, let onRetry):
-            ErrorStateView(error: error, onRetry: onRetry)
+            ProductDetailContentView(product: product, productURL: viewModel.getProductURL())
+        case .error(let error, let retryAction):
+            ErrorStateView(error: error, onRetry: retryAction)
         }
     }
 }
 
-// MARK: - Content View
-struct ProductDetailContentView: View {
+// MARK: - Content Components
+private struct ProductDetailContentView: View {
     let product: Product
+    let productURL: URL?
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                Text(product.title)
-                    .font(.title2)
-                    .fontWeight(.regular)
-                    .lineLimit(5)
-                    .padding(.leading, 8)
+                TitleSection(title: product.title)
                 
                 VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        if let condition = product.conditionString() {
-                            ProductLabel(
-                                backgroundColor: .gray.opacity(0.1),
-                                cornerRadius: 4,
-                                fontSize: 12,
-                                height: 24,
-                                text: condition,
-                                textColor: .gray
-                            )
-                        }
-                        
-                        if let warranty = product.warranty {
-                            HStack(spacing: 4) {
-                                Image(systemName: IconNames.shield)
-                                    .foregroundColor(.green)
-                                Text(warranty)
-                                    .font(.subheadline)
-                            }
-                        }
-                    }
-                    
-                    // Image Section
-                    if let pictures = product.pictures, !pictures.isEmpty {
-                        ImageCarousel(pictures: pictures)
-                            .frame(height: 360)
-                    } else if let thumbnail = product.thumbnail {
-                        URLImageView(urlString: thumbnail)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 360)
-                    }
-                    
-                    // Price
-                    Text(product.price.toFormattedPrice())
-                        .font(.title)
-                        .fontWeight(.semibold)
-                    
-                    // Free Shipping
-                    if let freeShippingText = product.freeShippingText() {
-                        ProductLabel(
-                            backgroundColor: .highlightBackground,
-                            cornerRadius: 8,
-                            fontSize: 14,
-                            height: 30,
-                            text: freeShippingText,
-                            textColor: .highlightColor
-                        )
-                    }
+                    ProductInfoSection(product: product)
+                    ImageSection(pictures: product.pictures)
+                    PriceAndShippingSection(product: product)
                 }
                 .padding(.horizontal)
                 
                 Spacer(minLength: 10)
                 
-                if let permalink = product.permalink {
-                    BuyButton(permalink: permalink)
+                if let url = productURL {
+                    BuyButton(url: url)
                 }
             }
             .padding(.vertical)
@@ -108,14 +63,115 @@ struct ProductDetailContentView: View {
     }
 }
 
-// MARK: - Buy Button
-struct BuyButton: View {
+// MARK: - Section Components
+private struct TitleSection: View {
+    let title: String
+    
+    var body: some View {
+        Text(title)
+            .font(.title2)
+            .fontWeight(.regular)
+            .lineLimit(5)
+            .padding(.leading, 8)
+    }
+}
+
+private struct ProductInfoSection: View {
+    let product: Product
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ConditionLabel(condition: product.conditionString())
+            WarrantyInfo(warranty: product.warranty)
+        }
+    }
+}
+
+private struct ConditionLabel: View {
+    let condition: String?
+    
+    var body: some View {
+        if let condition = condition {
+            ProductLabel(
+                backgroundColor: .gray.opacity(0.1),
+                cornerRadius: 4,
+                fontSize: 12,
+                height: 24,
+                text: condition,
+                textColor: .gray
+            )
+        }
+    }
+}
+
+private struct WarrantyInfo: View {
+    let warranty: String?
+    
+    var body: some View {
+        if let warranty = warranty {
+            HStack(spacing: 4) {
+                Image(systemName: IconNames.shield)
+                    .foregroundColor(.green)
+                Text(warranty)
+                    .font(.subheadline)
+            }
+        }
+    }
+}
+
+private struct ImageSection: View {
+    let pictures: [Picture]?
+    
+    var body: some View {
+        ImageCarousel(pictures: pictures ?? [])
+            .frame(height: 360)
+    }
+}
+
+private struct PriceAndShippingSection: View {
+    let product: Product
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            PriceView(price: product.price)
+            ShippingView(product: product)
+        }
+    }
+}
+
+private struct PriceView: View {
+    let price: Double
+    
+    var body: some View {
+        Text(price.toFormattedPrice())
+            .font(.title)
+            .fontWeight(.semibold)
+    }
+}
+
+private struct ShippingView: View {
+    let product: Product
+    
+    var body: some View {
+        if let freeShippingText = product.freeShippingText() {
+            ProductLabel(
+                backgroundColor: .highlightBackground,
+                cornerRadius: 8,
+                fontSize: 14,
+                height: 30,
+                text: freeShippingText,
+                textColor: .highlightColor
+            )
+        }
+    }
+}
+
+private struct BuyButton: View {
     @Environment(\.openURL) private var openURL
-    let permalink: String
+    let url: URL
     
     var body: some View {
         Button {
-            guard let url = URL(string: permalink) else { return }
             openURL(url)
         } label: {
             HStack {
@@ -130,11 +186,5 @@ struct BuyButton: View {
             .cornerRadius(10)
             .padding(.horizontal)
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ProductDetailView(productId: "MLA935834730")
     }
 }
