@@ -7,8 +7,8 @@ This project was developed as part of a Mobile Challenge, demonstrating modern i
 
 ## Key Features
 
-- 🔍 Intuitive product search functionality
-- 📋 Comprehensive search results listing
+- 🔍 Product search functionality
+- 📋 Search results listing
 - 📦 Product detail view
 - 📱 Full support for device rotation
 
