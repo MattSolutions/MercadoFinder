@@ -50,5 +50,5 @@ open MercadoFinder.xcworkspace
 
 ## Contact
 
-[Matias Battiti]
-[https://www.linkedin.com/in/matias-battiti/]
+Matias Battiti <br/>
+https://www.linkedin.com/in/matias-battiti/
