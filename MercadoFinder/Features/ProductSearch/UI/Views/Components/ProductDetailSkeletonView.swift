@@ -5,7 +5,6 @@
 //  Created by MATIAS BATTITI on 02/03/2025.
 //
 
-
 import SwiftUI
 
 // MARK: - Loading State
@@ -20,25 +19,25 @@ struct ProductDetailSkeletonView: View {
                     .frame(width: 80)
                 Spacer()
             }
-            
+
             Rectangle()
                 .fill(Color.gray.opacity(0.2))
                 .frame(height: 360)
                 .cornerRadius(8)
-            
+
             HStack {
                 VStack(alignment: .leading, spacing: 20) {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 24)
                         .cornerRadius(4)
-                    
+
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 30)
                         .cornerRadius(4)
                         .frame(width: 150)
-                    
+
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 18)
@@ -47,14 +46,14 @@ struct ProductDetailSkeletonView: View {
                 }
                 Spacer()
             }
-            
+
             HStack {
                 Capsule()
                     .fill(Color.gray.opacity(0.2))
                     .frame(width: 120, height: 30)
                 Spacer()
             }
-            
+
             Capsule()
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 180, height: 40)

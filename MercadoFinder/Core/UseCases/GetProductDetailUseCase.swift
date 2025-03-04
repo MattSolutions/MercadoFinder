@@ -13,16 +13,16 @@ protocol GetProductDetailUseCaseProtocol {
 
 final class GetProductDetailUseCase: GetProductDetailUseCaseProtocol {
     private let repository: ProductRepositoryProtocol
-    
+
     init(repository: ProductRepositoryProtocol = RemoteProductRepository()) {
         self.repository = repository
     }
-    
+
     func execute(id: String) async throws -> Product {
         guard !id.isEmpty else {
             throw NetworkError.invalidURL
         }
-        
+
         return try await repository.getProductDetail(id: id)
     }
 }

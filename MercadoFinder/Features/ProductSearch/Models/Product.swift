@@ -21,8 +21,7 @@ struct Product: Codable, Identifiable {
     var initialQuantity: Int?
     var warranty: String?
     var permalink: String?
-    
-    
+
     enum CodingKeys: String, CodingKey {
         case id, title, price, thumbnail, pictures, condition, shipping
         case soldQuantity = "sold_quantity"
@@ -32,29 +31,29 @@ struct Product: Codable, Identifiable {
         case warranty
         case permalink
     }
-    
+
     func conditionString() -> String? {
         guard condition != nil else { return nil }
         return isNew() ? AppText.Product.new : AppText.Product.used
     }
-    
+
     func hasStock() -> Bool {
         return initialQuantity != nil && initialQuantity != 0
     }
-    
+
     func hasWarranty() -> Bool {
         guard let warranty = warranty else { return false }
         return warranty != "Sin garantía" && warranty.count < 40
     }
-    
+
     private func isNew() -> Bool {
         return condition == "new"
     }
-    
+
     func stockString() -> String {
         return hasStock() ? AppText.Product.available : AppText.Product.outOfStock
     }
-    
+
     func freeShippingText() -> String? {
         return shipping?.freeShipping == true ? AppText.Product.freeShipping : nil
     }
@@ -67,7 +66,7 @@ struct Picture: Codable, Identifiable {
 
 struct Shipping: Codable {
     var freeShipping: Bool?
-    
+
     enum CodingKeys: String, CodingKey {
         case freeShipping = "free_shipping"
     }

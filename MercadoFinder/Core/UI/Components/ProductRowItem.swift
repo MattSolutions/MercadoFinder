@@ -10,15 +10,15 @@ import SwiftUI
 struct ProductRowItem: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     private let product: Product
-    
+
     init(product: Product) {
         self.product = product
     }
-    
+
     var body: some View {
         HStack(spacing: 12) {
             ProductImageView(urlString: product.thumbnail)
-            
+
             ProductDetailsView(
                 title: product.title,
                 price: product.price.toFormattedPrice(),
@@ -26,7 +26,7 @@ struct ProductRowItem: View {
                 freeShippingText: product.freeShippingText(),
                 isPortrait: verticalSizeClass == .regular
             )
-            
+
             Spacer()
         }
         .padding()
@@ -61,14 +61,14 @@ struct ProductDetailsView: View {
     let hasFreeShipping: Bool
     let freeShippingText: String?
     let isPortrait: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
                 .fontWeight(.medium)
                 .lineLimit(isPortrait ? 2 : 1)
-            
+
             ProductPriceView(price: price, hasFreeShipping: hasFreeShipping, freeShippingText: freeShippingText)
         }
     }
@@ -78,15 +78,15 @@ struct ProductPriceView: View {
     let price: String
     let hasFreeShipping: Bool
     let freeShippingText: String?
-    
+
     var body: some View {
         HStack {
             Text(price)
                 .font(.title3)
                 .fontWeight(.regular)
-            
+
             Spacer()
-            
+
             if hasFreeShipping, let shippingText = freeShippingText {
                 ProductLabel(
                     backgroundColor: .highlightBackground,

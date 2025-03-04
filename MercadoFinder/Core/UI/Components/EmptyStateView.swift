@@ -11,17 +11,17 @@ struct EmptyStateView: View {
     let iconName: String
     let title: String
     let message: String
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: iconName)
                 .font(.system(size: 40))
                 .foregroundColor(.gray)
-            
+
             Text(title)
                 .font(.headline)
                 .multilineTextAlignment(.center)
-            
+
             Text(message)
                 .font(.subheadline)
                 .foregroundColor(.secondary)

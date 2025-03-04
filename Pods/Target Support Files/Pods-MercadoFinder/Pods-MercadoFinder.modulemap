@@ -1,0 +1,6 @@
+framework module Pods_MercadoFinder {
+  umbrella header "Pods-MercadoFinder-umbrella.h"
+
+  export *
+  module * { export * }
+}

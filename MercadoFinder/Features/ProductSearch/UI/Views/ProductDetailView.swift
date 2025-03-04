@@ -10,11 +10,11 @@ import SwiftUI
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     init(viewModel: ProductDetailViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         content
             .navigationBarBackButtonHidden()
@@ -36,7 +36,7 @@ struct ProductDetailView: View {
                 viewModel.cancelOngoingTasks()
             }
     }
-    
+
     @ViewBuilder
     private var content: some View {
         switch viewModel.state {
@@ -54,21 +54,21 @@ struct ProductDetailView: View {
 private struct ProductDetailContentView: View {
     let product: Product
     let productURL: URL?
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
                 TitleSection(title: product.title)
-                
+
                 VStack(alignment: .leading, spacing: 16) {
                     ProductInfoSection(product: product)
                     ImageSection(pictures: product.pictures)
                     PriceAndShippingSection(product: product)
                 }
                 .padding(.horizontal)
-                
+
                 Spacer(minLength: 10)
-                
+
                 if let url = productURL {
                     BuyButton(url: url)
                 }
@@ -82,7 +82,7 @@ private struct ProductDetailContentView: View {
 // MARK: - Section Components
 private struct TitleSection: View {
     let title: String
-    
+
     var body: some View {
         Text(title)
             .font(.title2)
@@ -94,7 +94,7 @@ private struct TitleSection: View {
 
 private struct ProductInfoSection: View {
     let product: Product
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ConditionLabel(condition: product.conditionString())
@@ -105,7 +105,7 @@ private struct ProductInfoSection: View {
 
 private struct ConditionLabel: View {
     let condition: String?
-    
+
     var body: some View {
         if let condition = condition {
             ProductLabel(
@@ -122,7 +122,7 @@ private struct ConditionLabel: View {
 
 private struct WarrantyInfo: View {
     let warranty: String?
-    
+
     var body: some View {
         if let warranty = warranty {
             HStack(spacing: 4) {
@@ -137,7 +137,7 @@ private struct WarrantyInfo: View {
 
 private struct ImageSection: View {
     let pictures: [Picture]?
-    
+
     var body: some View {
         ImageCarousel(pictures: pictures ?? [])
             .frame(height: 360)
@@ -146,7 +146,7 @@ private struct ImageSection: View {
 
 private struct PriceAndShippingSection: View {
     let product: Product
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             PriceView(price: product.price)
@@ -157,7 +157,7 @@ private struct PriceAndShippingSection: View {
 
 private struct PriceView: View {
     let price: Double
-    
+
     var body: some View {
         Text(price.toFormattedPrice())
             .font(.title)
@@ -167,7 +167,7 @@ private struct PriceView: View {
 
 private struct ShippingView: View {
     let product: Product
-    
+
     var body: some View {
         if let freeShippingText = product.freeShippingText() {
             ProductLabel(
@@ -185,7 +185,7 @@ private struct ShippingView: View {
 private struct BuyButton: View {
     @Environment(\.openURL) private var openURL
     let url: URL
-    
+
     var body: some View {
         Button {
             openURL(url)

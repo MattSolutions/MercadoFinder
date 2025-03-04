@@ -10,17 +10,17 @@ import SwiftUI
 struct ErrorStateView: View {
     let error: Error
     let onRetry: (() -> Void)?
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: IconNames.warning)
                 .font(.system(size: 40))
                 .foregroundColor(.red)
-            
+
             Text(AppText.Common.error)
                 .font(.headline)
                 .multilineTextAlignment(.center)
-            
+
             if let networkError = error as? NetworkError {
                 Text(networkError.userMessage)
                     .font(.subheadline)
@@ -32,7 +32,7 @@ struct ErrorStateView: View {
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
-            
+
             if let onRetry = onRetry {
                 Button(action: onRetry) {
                     HStack(spacing: 8) {

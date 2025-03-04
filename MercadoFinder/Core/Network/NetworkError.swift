@@ -42,7 +42,7 @@ extension NetworkError: LocalizedError {
     var errorDescription: String? {
         return userMessage
     }
-    
+
     var failureReason: String? {
         switch self {
         case .invalidURL:

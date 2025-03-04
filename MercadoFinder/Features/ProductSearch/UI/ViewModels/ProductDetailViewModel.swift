@@ -18,12 +18,12 @@ enum ProductDetailState {
 final class ProductDetailViewModel: ObservableObject {
     // MARK: - State
     @Published private(set) var state: ProductDetailState = .loading
-    
+
     // MARK: - Private Properties
     private let productId: String
     private let getProductDetailUseCase: GetProductDetailUseCaseProtocol
     private var currentTask: Task<Void, Never>?
-    
+
     // MARK: - Initialization
     init(
         productId: String,
@@ -33,18 +33,18 @@ final class ProductDetailViewModel: ObservableObject {
         self.getProductDetailUseCase = getProductDetailUseCase
         fetchProductDetails()
     }
-    
+
     deinit {
         currentTask?.cancel()
     }
-    
+
     // MARK: - Fetch Data
     func fetchProductDetails() {
         currentTask?.cancel()
-        
+
         Logger.info("Starting product details fetch for ID: \(productId)")
         state = .loading
-        
+
         currentTask = Task {
             do {
                 let product = try await getProductDetailUseCase.execute(id: productId)
@@ -55,13 +55,13 @@ final class ProductDetailViewModel: ObservableObject {
             } catch {
                 if !Task.isCancelled {
                     let networkError = error as? NetworkError ?? .unknown
-                    Logger.error("Error fetching product details: \(networkError.localizedDescription), error: \(error)")
+                Logger.error("Error fetching product details: \(networkError.localizedDescription), error: \(error)")
                     state = .error(networkError, retryAction: fetchProductDetails)
                 }
             }
         }
     }
-    
+
     // MARK: - Utility Methods
     func getProductURL() -> URL? {
         guard
@@ -69,10 +69,10 @@ final class ProductDetailViewModel: ObservableObject {
             let permalink = product.permalink,
             let url = URL(string: permalink)
         else { return nil }
-        
+
         return url
     }
-    
+
     func cancelOngoingTasks() {
         currentTask?.cancel()
         currentTask = nil

@@ -5,7 +5,6 @@
 //  Created by MATIAS BATTITI on 01/03/2025.
 //
 
-
 import SwiftUI
 
 struct URLImageView: View {

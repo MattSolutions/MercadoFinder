@@ -14,7 +14,7 @@ extension Double {
         formatter.currencyCode = currency
         formatter.currencyGroupingSeparator = "."
         formatter.maximumFractionDigits = 0
-        
+
         return formatter.string(from: NSNumber(value: self)) ?? "$ --"
     }
 }

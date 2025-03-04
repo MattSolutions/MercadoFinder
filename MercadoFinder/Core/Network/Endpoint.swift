@@ -10,7 +10,7 @@ import Foundation
 enum APIEndpoints {
     static let scheme = "https"
     static let host = "api.mercadolibre.com"
-    
+
     enum Products {
         static let search = "/sites/MLA/search"
         static func details(id: String) -> String { "/items/\(id)" }
@@ -29,7 +29,7 @@ extension Endpoint {
     var scheme: String {
         return APIEndpoints.scheme
     }
-    
+
     var host: String {
         return APIEndpoints.host
     }

@@ -13,28 +13,28 @@ protocol APIClientProtocol {
 
 final class APIClient: APIClientProtocol {
     private let session: URLSession
-    
+
     init(session: URLSession = .shared) {
         self.session = session
     }
-    
+
     func fetch<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
         guard let url = makeURL(from: endpoint) else {
             Logger.error("Invalid URL constructed")
             throw NetworkError.invalidURL
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
-        
+
         do {
             let (data, response) = try await session.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 Logger.error("Invalid response type")
                 throw NetworkError.invalidResponse
             }
-            
+
             switch httpResponse.statusCode {
             case 200...299:
                 do {
@@ -64,14 +64,14 @@ final class APIClient: APIClientProtocol {
             throw NetworkError.unknown
         }
     }
-    
+
     private func makeURL(from endpoint: Endpoint) -> URL? {
         var components = URLComponents()
         components.scheme = endpoint.scheme
         components.host = endpoint.host
         components.path = endpoint.path
         components.queryItems = endpoint.queryItems
-        
+
         return components.url
     }
 }

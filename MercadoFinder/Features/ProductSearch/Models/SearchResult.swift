@@ -11,7 +11,7 @@ struct SearchResult: Decodable {
     let query: String
     let paging: Paging
     let results: [Product]
-    
+
     struct Paging: Decodable {
         let total: Int
         let offset: Int

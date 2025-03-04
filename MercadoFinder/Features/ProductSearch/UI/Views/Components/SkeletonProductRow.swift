@@ -14,24 +14,24 @@ internal struct SkeletonProductRow: View {
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 80, height: 80)
                 .cornerRadius(8)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
                     .frame(height: 16)
                     .cornerRadius(4)
-                
+
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
                     .frame(width: 120, height: 20)
                     .cornerRadius(4)
-                
+
                 HStack {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                         .frame(width: 80, height: 12)
                         .cornerRadius(4)
-                    
+
                     Spacer()
                 }
             }

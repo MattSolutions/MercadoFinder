@@ -9,14 +9,14 @@ import SwiftUI
 
 struct ProductLabel: View {
     @State private var textWidth: CGFloat = .zero
-    
+
     var backgroundColor: Color
     var cornerRadius: CGFloat
     var fontSize: CGFloat
     var height: CGFloat
     var text: String
     var textColor: Color
-    
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)

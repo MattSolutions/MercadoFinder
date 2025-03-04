@@ -17,7 +17,7 @@ enum AppText {
         static let error = "Error"
         static let appName = "MercadoFinder"
     }
-    
+
     enum Product {
         static let new = "Nuevo"
         static let used = "Usado"
@@ -26,7 +26,7 @@ enum AppText {
         static let outOfStock = "Sin stock"
         static let buy = "Comprar en Mercado Libre"
     }
-    
+
     enum Search {
         static let placeholder = "Buscar productos..."
         static let welcome = "Busca productos de MercadoFinder"

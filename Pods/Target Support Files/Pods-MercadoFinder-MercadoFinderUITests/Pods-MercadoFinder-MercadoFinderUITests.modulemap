@@ -1,0 +1,6 @@
+framework module Pods_MercadoFinder_MercadoFinderUITests {
+  umbrella header "Pods-MercadoFinder-MercadoFinderUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

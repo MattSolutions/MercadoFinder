@@ -5,12 +5,11 @@
 //  Created by MATIAS BATTITI on 28/02/2025.
 //
 
-
 import SwiftUI
 
 struct SearchResultsView: View {
     let state: SearchState
-    
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
@@ -20,7 +19,7 @@ struct SearchResultsView: View {
         }
         .background(Color(.systemGroupedBackground))
     }
-    
+
     @ViewBuilder
     private var contentView: some View {
         switch state {
@@ -42,12 +41,12 @@ struct SearchResultsView: View {
 
 private struct ProductList: View {
     let products: [Product]
-    
+
     var body: some View {
         ForEach(products) { product in
             NavigationLink(destination:
                             ProductDetailView(viewModel:
-                                                ProductDetailViewModel(productId: product.id))){
+                                                ProductDetailViewModel(productId: product.id))) {
                 ProductRowItem(product: product)
             }
             .buttonStyle(PlainButtonStyle())

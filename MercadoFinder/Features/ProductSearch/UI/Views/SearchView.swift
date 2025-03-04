@@ -9,12 +9,12 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 searchHeader
-                
+
                 SearchResultsView(state: viewModel.state)
             }
             .navigationTitle("MercadoFinder")
@@ -22,7 +22,7 @@ struct SearchView: View {
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
         }
     }
-    
+
     // MARK: - Search Header
     private var searchHeader: some View {
         VStack(spacing: 15) {
@@ -35,13 +35,13 @@ struct SearchView: View {
         }
         .background(Color.yellow.opacity(0.8))
     }
-    
+
     // MARK: - Actions
     private func performSearch() {
         hideKeyboard()
         viewModel.search()
     }
-    
+
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }

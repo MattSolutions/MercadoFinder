@@ -11,7 +11,7 @@ import SwiftUI
 struct ImageCarousel: View {
     let pictures: [Picture]
     @State private var currentIndex = 0
-    
+
     var body: some View {
         VStack {
             if pictures.isEmpty {
@@ -41,7 +41,7 @@ private struct EmptyImagePlaceholder: View {
 private struct CarouselContent: View {
     let pictures: [Picture]
     @Binding var currentIndex: Int
-    
+
     var body: some View {
         VStack {
             TabView(selection: $currentIndex) {
@@ -51,7 +51,7 @@ private struct CarouselContent: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            
+
             if pictures.count > 1 {
                 PageIndicator(currentIndex: currentIndex, totalCount: pictures.count)
             }
@@ -62,7 +62,7 @@ private struct CarouselContent: View {
 private struct PageIndicator: View {
     let currentIndex: Int
     let totalCount: Int
-    
+
     var body: some View {
         HStack(spacing: 8) {
             ForEach(0..<min(totalCount, 5), id: \.self) { index in
@@ -77,13 +77,13 @@ private struct PageIndicator: View {
 
 struct PictureView: View {
     let urlString: String?
-    
+
     private var secureUrl: URL? {
         guard let originalString = urlString else { return nil }
         let secureString = originalString.replacingOccurrences(of: "http://", with: "https://")
         return URL(string: secureString)
     }
-    
+
     var body: some View {
         AsyncImage(
             url: secureUrl,

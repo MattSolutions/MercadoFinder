@@ -21,14 +21,14 @@ extension ProductEndpoints: Endpoint {
             return APIEndpoints.Products.search
         }
     }
-    
+
     var method: RequestMethod {
         switch self {
         case .searchProducts, .productDetail:
             return .get
         }
     }
-    
+
     var queryItems: [URLQueryItem]? {
         switch self {
         case .searchProducts(let productName):

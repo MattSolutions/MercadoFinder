@@ -20,20 +20,20 @@ final class SearchViewModel: ObservableObject {
     // MARK: - State Properties
     @Published private(set) var state: SearchState = .empty
     @Published var searchQuery = ""
-    
+
     // MARK: - Private Properties
     private let searchUseCase: SearchProductsUseCaseProtocol
-    
+
     // MARK: - Initialization
     init(searchUseCase: SearchProductsUseCaseProtocol = SearchProductsUseCase()) {
         self.searchUseCase = searchUseCase
     }
-    
+
     // MARK: - Search Methods
     func search() {
         let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
         Logger.info("Search requested with query: '\(searchQuery)', trimmed: '\(trimmedQuery)'")
-        
+
         if trimmedQuery.isEmpty {
             Logger.info("Empty search query, clearing results")
             clearSearch()
@@ -47,12 +47,12 @@ final class SearchViewModel: ObservableObject {
         searchQuery = ""
         state = .empty
     }
-    
+
     // MARK: - Private Methods
     private func performSearch() {
         Logger.info("Performing search with query: '\(searchQuery)'")
         state = .loading
-        
+
         Task {
             do {
                 let result = try await searchUseCase.execute(query: searchQuery)
