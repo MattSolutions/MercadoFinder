@@ -45,8 +45,8 @@ private struct CarouselContent: View {
     var body: some View {
         VStack {
             TabView(selection: $currentIndex) {
-                ForEach(Array(pictures.enumerated()), id: \.element.id) { index, picture in
-                    PictureView(urlString: picture.url)
+                ForEach(pictures.indices, id: \.self) { index in
+                    PictureView(urlString: pictures[index].url)
                         .tag(index)
                 }
             }
@@ -64,14 +64,25 @@ private struct PageIndicator: View {
     let totalCount: Int
 
     var body: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<min(totalCount, 5), id: \.self) { index in
-                Circle()
-                    .fill(currentIndex == index ? Color.primaryColor : Color.gray.opacity(0.5))
-                    .frame(width: 8, height: 8)
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(0..<totalCount, id: \.self) { index in
+                        Circle()
+                            .fill(currentIndex == index ? Color.primaryColor : Color.gray.opacity(0.5))
+                            .frame(width: 8, height: 8)
+                            .id(index)
+                    }
+                }
+                .padding(.horizontal, 8)
+            }
+            .frame(width: 80, height: 20)
+            .onChange(of: currentIndex) {
+                withAnimation {
+                    proxy.scrollTo(currentIndex, anchor: .center)
+                }
             }
         }
-        .padding(.top, 8)
     }
 }
 
