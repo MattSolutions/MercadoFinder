@@ -9,7 +9,7 @@ This project was developed as part of a Mobile Challenge, demonstrating modern i
 
 - 🔍 Intuitive product search functionality
 - 📋 Comprehensive search results listing
-- 📦 Detail Product View
+- 📦 Product detail view
 - 📱 Full support for device rotation
 
 ## Prerequisites
