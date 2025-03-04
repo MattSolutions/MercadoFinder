@@ -9,21 +9,23 @@ import SwiftUI
 
 struct ProductRowItem: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
-    @ObservedObject private var viewModel: ProductRowItemViewModel
+    private let product: Product
     
     init(product: Product) {
-        self._viewModel = ObservedObject(wrappedValue: ProductRowItemViewModel(product: product))
+        self.product = product
     }
     
     var body: some View {
         HStack(spacing: 12) {
-            ProductImageView(urlString: viewModel.thumbnail)
+            ProductImageView(urlString: product.thumbnail)
             
-            if verticalSizeClass == .regular {
-                ProductDetailsView(title: viewModel.title, price: viewModel.priceFormatted, hasFreeShipping: viewModel.hasFreeShipping, isPortrait: true)
-            } else {
-                ProductDetailsView(title: viewModel.title, price: viewModel.priceFormatted, hasFreeShipping: viewModel.hasFreeShipping, isPortrait: false)
-            }
+            ProductDetailsView(
+                title: product.title,
+                price: product.price.toFormattedPrice(),
+                hasFreeShipping: product.shipping?.freeShipping ?? false,
+                freeShippingText: product.freeShippingText(),
+                isPortrait: verticalSizeClass == .regular
+            )
             
             Spacer()
         }
@@ -53,11 +55,11 @@ struct ProductImageView: View {
     }
 }
 
-
 struct ProductDetailsView: View {
     let title: String
     let price: String
     let hasFreeShipping: Bool
+    let freeShippingText: String?
     let isPortrait: Bool
     
     var body: some View {
@@ -67,7 +69,7 @@ struct ProductDetailsView: View {
                 .fontWeight(.medium)
                 .lineLimit(isPortrait ? 2 : 1)
             
-            ProductPriceView(price: price, hasFreeShipping: hasFreeShipping)
+            ProductPriceView(price: price, hasFreeShipping: hasFreeShipping, freeShippingText: freeShippingText)
         }
     }
 }
@@ -75,6 +77,7 @@ struct ProductDetailsView: View {
 struct ProductPriceView: View {
     let price: String
     let hasFreeShipping: Bool
+    let freeShippingText: String?
     
     var body: some View {
         HStack {
@@ -84,13 +87,13 @@ struct ProductPriceView: View {
             
             Spacer()
             
-            if hasFreeShipping {
+            if hasFreeShipping, let shippingText = freeShippingText {
                 ProductLabel(
                     backgroundColor: .highlightBackground,
                     cornerRadius: 4,
                     fontSize: 12,
                     height: 22,
-                    text: AppText.Product.freeShipping,
+                    text: shippingText,
                     textColor: .highlightColor
                 )
             }

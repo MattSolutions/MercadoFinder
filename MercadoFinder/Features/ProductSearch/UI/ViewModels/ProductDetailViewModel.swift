@@ -42,19 +42,21 @@ final class ProductDetailViewModel: ObservableObject {
     func fetchProductDetails() {
         currentTask?.cancel()
         
+        Logger.info("Starting product details fetch for ID: \(productId)")
         state = .loading
         
         currentTask = Task {
             do {
                 let product = try await getProductDetailUseCase.execute(id: productId)
                 if !Task.isCancelled {
+                    Logger.info("Successfully loaded product: \(product.id)")
                     state = .loaded(product)
                 }
             } catch {
                 if !Task.isCancelled {
                     let networkError = error as? NetworkError ?? .unknown
+                    Logger.error("Error fetching product details: \(networkError.localizedDescription), error: \(error)")
                     state = .error(networkError, retryAction: fetchProductDetails)
-                    Logger.error("Error fetching product details: \(networkError.localizedDescription)")
                 }
             }
         }

@@ -15,6 +15,7 @@ enum AppText {
         static let retry = "Intentar nuevamente"
         static let loading = "Cargando..."
         static let error = "Error"
+        static let appName = "MercadoFinder"
     }
     
     enum Product {
@@ -33,12 +34,6 @@ enum AppText {
     }
 }
 
-// MARK: - Network Constants
-enum NetworkConstants {
-    static let scheme = "https:"
-    static let host = "api.mercadolibre.com"
-}
-
 // MARK: - Icon Names
 enum IconNames {
     static let clear = "xmark"
@@ -48,6 +43,7 @@ enum IconNames {
     static let retry = "arrow.clockwise"
     static let search = "magnifyingglass"
     static let shield = "checkmark.shield"
+    static let backArrow = "arrow.left"
 }
 
 // MARK: - String Extensions

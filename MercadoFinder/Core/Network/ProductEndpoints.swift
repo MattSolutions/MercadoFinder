@@ -16,9 +16,9 @@ extension ProductEndpoints: Endpoint {
     var path: String {
         switch self {
         case .productDetail(let productId):
-            return "/items/\(productId)"
+            return APIEndpoints.Products.details(id: productId)
         case .searchProducts:
-            return "/sites/MLA/search"
+            return APIEndpoints.Products.search
         }
     }
     
@@ -35,7 +35,6 @@ extension ProductEndpoints: Endpoint {
             return [URLQueryItem(name: "q", value: productName)]
         case .productDetail:
             return nil
-
         }
     }
 }

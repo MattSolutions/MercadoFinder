@@ -46,10 +46,11 @@ private struct ProductList: View {
     var body: some View {
         ForEach(products) { product in
             NavigationLink(destination:
-                            ProductDetailView(viewModel: ProductDetailViewModel(productId: product.id ?? ""))) {
+                            ProductDetailView(viewModel:
+                                                ProductDetailViewModel(productId: product.id))){
                 ProductRowItem(product: product)
             }
-                            .buttonStyle(PlainButtonStyle())
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }

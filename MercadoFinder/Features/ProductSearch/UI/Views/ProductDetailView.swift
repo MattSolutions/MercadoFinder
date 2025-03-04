@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
+    @Environment(\.dismiss) private var dismiss
     
     init(viewModel: ProductDetailViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -16,7 +17,21 @@ struct ProductDetailView: View {
     
     var body: some View {
         content
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: IconNames.backArrow)
+                            .foregroundColor(.black)
+                            .imageScale(.large)
+                    }
+                }
+            }
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color.yellow.opacity(0.8), for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .onDisappear {
                 viewModel.cancelOngoingTasks()
             }
@@ -60,6 +75,7 @@ private struct ProductDetailContentView: View {
             }
             .padding(.vertical)
         }
+        .scrollIndicators(.hidden)
     }
 }
 

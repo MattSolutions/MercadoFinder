@@ -31,30 +31,40 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Search Methods
     func search() {
-        if searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        Logger.info("Search requested with query: '\(searchQuery)', trimmed: '\(trimmedQuery)'")
+        
+        if trimmedQuery.isEmpty {
+            Logger.info("Empty search query, clearing results")
             clearSearch()
             return
         }
         performSearch()
     }
-    
+
     func clearSearch() {
+        Logger.info("Search cleared")
         searchQuery = ""
         state = .empty
     }
     
     // MARK: - Private Methods
     private func performSearch() {
+        Logger.info("Performing search with query: '\(searchQuery)'")
         state = .loading
         
         Task {
             do {
                 let result = try await searchUseCase.execute(query: searchQuery)
+                Logger.info("Search successful: found \(result.results.count) results for '\(searchQuery)'")
+                if result.results.isEmpty {
+                    Logger.info("Search returned no results for query: '\(searchQuery)'")
+                }
                 state = .success(result.results)
             } catch {
                 let networkError = error as? NetworkError ?? NetworkError.unknown
+                Logger.error("Search failed: \(networkError.localizedDescription) for query: '\(searchQuery)'")
                 state = .failure(networkError, retryAction: performSearch)
-                Logger.error("Search error: \(error)")
             }
         }
     }

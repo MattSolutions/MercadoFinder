@@ -8,7 +8,7 @@
 import Foundation
 
 struct Product: Codable, Identifiable {
-    var id: String?
+    var id: String
     var title: String
     var price: Double
     var thumbnail: String?
