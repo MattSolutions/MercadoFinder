@@ -8,26 +8,17 @@
 import XCTest
 
 final class MercadoFinderUITestsLaunchTests: XCTestCase {
-
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        true
-    }
-
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-    }
-
     @MainActor
-    func testLaunch() throws {
+    func testInitialUIElements() throws {
         let app = XCUIApplication()
         app.launch()
 
-        // Insert steps here to perform after app launch but before taking a screenshot,
-        // such as logging into a test account or navigating somewhere in the app
+        XCTAssertTrue(app.navigationBars["MercadoFinder"].exists)
 
-        let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
-        attachment.lifetime = .keepAlways
-        add(attachment)
+        let welcomeText = app.staticTexts["Busca productos de MercadoFinder"]
+        let sloganText = app.staticTexts["Encuentra lo que necesitas al mejor precio"]
+
+        XCTAssertTrue(welcomeText.exists, "Welcome text should be visible on launch")
+        XCTAssertTrue(sloganText.exists, "Slogan text should be visible on launch")
     }
 }

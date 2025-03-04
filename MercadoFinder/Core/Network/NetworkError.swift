@@ -13,7 +13,6 @@ enum NetworkError: Error {
     case invalidResponse
     case decodingFailed(Error)
     case serverError(statusCode: Int)
-    case noInternet
     case unknown
 }
 
@@ -30,8 +29,6 @@ extension NetworkError {
             return "Problema al procesar la respuesta del servidor. Por favor, intenta nuevamente."
         case .serverError(let statusCode):
             return "Error del servidor (Código: \(statusCode)). Por favor, intenta más tarde."
-        case .noInternet:
-            return "Sin conexión a internet. Por favor, verifica tu configuración de red."
         case .unknown:
             return "Ocurrió un error inesperado. Por favor, intenta nuevamente."
         }
@@ -55,8 +52,6 @@ extension NetworkError: LocalizedError {
             return "JSON decoding failed: \(error.localizedDescription)"
         case .serverError(let statusCode):
             return "Server returned error status code: \(statusCode)"
-        case .noInternet:
-            return "Device has no internet connection"
         case .unknown:
             return "An unknown error occurred"
         }

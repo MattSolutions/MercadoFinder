@@ -8,29 +8,41 @@
 import XCTest
 @testable import MercadoFinder
 
-final class MercadoFinderTests: XCTestCase {
+final class ProductModelTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testProductCondition() {
+        let newProduct = Product(id: "123", title: "iPhone", price: 100000, condition: "new")
+        XCTAssertEqual(newProduct.conditionString(), AppText.Product.new)
+
+        let usedProduct = Product(id: "456", title: "iPad", price: 50000, condition: "used")
+        XCTAssertEqual(usedProduct.conditionString(), AppText.Product.used)
+
+        let nilConditionProduct = Product(id: "789", title: "MacBook", price: 200000, condition: nil)
+        XCTAssertNil(nilConditionProduct.conditionString())
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testFreeShipping() {
+        let freeShippingProduct = Product(
+            id: "123",
+            title: "iPhone",
+            price: 100000,
+            shipping: Shipping(freeShipping: true)
+        )
+        XCTAssertEqual(freeShippingProduct.freeShippingText(), AppText.Product.freeShipping)
+
+        let noFreeShippingProduct = Product(
+            id: "456",
+            title: "iPad",
+            price: 50000,
+            shipping: Shipping(freeShipping: false)
+        )
+        XCTAssertNil(noFreeShippingProduct.freeShippingText())
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-    // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
+    func testPriceFormatting() {
+        let price = 19470000.0
+        let formatted = price.toFormattedPrice()
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+        XCTAssertTrue(formatted.contains("19.470.000"))
     }
-
 }
