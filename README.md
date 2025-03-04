@@ -2,8 +2,8 @@
 
 ## Overview
 
-MercadoFinder is an iOS application that uses the Mercado Libre API to provide users with product search and exploration experience.
-Made for the Mobile Challenge.
+MercadoFinder is an iOS application that uses the Mercado Libre API to provide users with product searching and viewing product details.
+This project was developed as part of a Mobile Challenge, demonstrating modern iOS development practices.
 
 ## Key Features
 
